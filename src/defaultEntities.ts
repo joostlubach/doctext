@@ -1,0 +1,35 @@
+import { EntitySpec } from './types'
+
+const defaultEntities: Record<string, EntitySpec> = {
+  copy: {
+    args:    1,
+    content: false,
+    
+    add: (entities, args) => {
+      entities.copy = args[0]
+    },
+  },
+  property: {
+    args:    1,
+    content: true,
+    
+    add: (entities, args, lines, util) => {
+      entities.properties ??= {}
+      entities.properties[args[0]] = util.raw(lines)
+    },
+  },
+  link: {
+    args:    1,
+    content: true,
+    
+    add: (entities, args, lines, util) => {
+      const href = args[0]
+      const caption = lines.length > 0 ? util.merge(lines) : args[0]
+
+      entities.links ??= []
+      entities.links.push({href, caption})
+    },
+  },
+}
+
+export default defaultEntities
