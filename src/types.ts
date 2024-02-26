@@ -28,7 +28,7 @@ export interface DoctextOptions {
   entities?: Record<string, EntitySpec>
 }
 
-export interface ReadResult<E extends Entities> {
+export interface ReadResult<E extends Entities = Entities> {
   matched:          DoctextDictionary<E>
   unmatched:        Doctext<E>[]
   undocumentedKeys: string[]
@@ -44,7 +44,7 @@ export interface Callsite {
   functionName?: string
 }
 
-export interface Doctext<E extends Entities> {
+export interface Doctext<E extends Entities = Entities> {
   lineno:      number
   summary:     string
   description: string
