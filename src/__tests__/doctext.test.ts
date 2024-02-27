@@ -336,6 +336,23 @@ describe("doctext", () => {
       }))
     })
     
+    it("should interpret any other indented lines as other lines", async () => {
+      const doctext = DoctextReader.create().readSync({
+        /// Summary
+        ///   Indented line
+        /// @link https://example.com Caption
+        foo: 'foo',
+      }).matched.foo
+
+      expect(doctext).toEqual(expect.objectContaining({
+        summary:  'Summary Indented line',
+        body:     'Summary Indented line',
+        entities: {
+          links: [{href: 'https://example.com', caption: "Caption"}],
+        },
+      }))
+    })
+    
     it("should throw an error on unknown entities", () => {
       expect(() => {
         DoctextReader.create().readSync({

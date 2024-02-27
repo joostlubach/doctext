@@ -45,9 +45,10 @@ export default class DoctextParser<E extends Entities> {
     entity: for (const [index, line] of lines.entries()) {
       if (line.match(ENTITY_CONTENT_RE) || (line === '' && current != null)) {
         if (current == null) {
-          throw new InvalidEntity(`Unxpected entity content line at ${index + 1}`, doctext)
+          rest.push(line)
+        } else {
+          current.lines.push(line.replace(/^\s{2}/, '').trimEnd())
         }
-        current.lines.push(line.replace(/^\s{2}/, '').trimEnd())
         continue entity
       }
 
