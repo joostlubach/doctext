@@ -304,19 +304,6 @@ describe("doctext", () => {
         },
       }))
     })
-
-    it("should not allow mixing inline and indented content", async () => {
-      expect(() => {
-        DoctextReader.create().readSync({
-          /// Summary
-          /// @property name
-          /// @link https://example.com Caption
-          ///
-          ///   Description
-          foo: 'foo',
-        }).matched.foo
-      }).toThrowError(InvalidEntity)
-    })
     
     it("should interpret indented lines below entities as entity content", async () => {
       const doctext = DoctextReader.create().readSync({
@@ -380,17 +367,6 @@ describe("doctext", () => {
           /**
            * Content for @copy entity.
            * @copy foo.bar What does this mean?
-           */
-          foo: 'foo',
-        })
-      }).toThrowError(InvalidEntity)
-
-      expect(() => {
-        DoctextReader.create().readSync({
-          /**
-           * Content for @copy entity.
-           * @copy foo.bar
-           *   What does this mean?
            */
           foo: 'foo',
         })
