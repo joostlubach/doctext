@@ -18,14 +18,6 @@ export interface DoctextOptions {
    * A blacklist for property keys. If specified, any property key in the blacklist will be ignored.
    */
   blacklist?: Array<string | RegExp>
-
-  /**
-   * The entities to use when parsing doctext comments. These are keywords starting with `'@'` such as
-   * `'@link' or '@copy'`. You can specify additional custom entities.
-   * 
-   * Refer to {@link ./entities.ts} for the default entities.
-   */
-  entities?: Record<string, EntitySpec>
 }
 
 export interface ReadResult<E extends Entities = Entities> {
@@ -45,11 +37,11 @@ export interface Callsite {
 }
 
 export interface Doctext<E extends Entities = Entities> {
-  lineno:      number
-  summary:     string
-  description: string
-  entities:    E
-  nodes:       Acorn.Comment[]
+  lineno:   number
+  summary:  string
+  body:     string
+  entities: E
+  nodes:    Acorn.Comment[]
 }
 
 export interface Entities {
@@ -63,13 +55,34 @@ export interface DoctextLink {
   caption: string
 }
 
-export interface EntitySpec {
+export interface EntitySpec<E extends Entities> {
   args:    number
   content: boolean
-  add:     (entities: Entities, args: string[], lines: string[], parser: EntityParseUtil) => void
+  add:     (entities: E, args: string[], lines: string[], parser: ParseUtil) => void
 }
 
-export interface EntityParseUtil {
-  merge: (lines: string[]) => string
-  raw:   (lines: string[]) => RawDoctext
+export interface ParseUtil {
+
+  /** Extracts a summary from all lines before the first blank line. */
+  summary: (lines: string[]) => string
+
+  /**
+   * Merges all lines into a single body.
+   * 
+   * @param skipEntities If true, entities will be removed from the body.
+   */
+  body: (lines: string[], skipEntities?: boolean) => string
+
+  /**
+   * Extracts simple entities from the given lines.
+   * 
+   * @param lines The lines of text to parse.
+   * @param name The name of the entity to extract.
+   * @returns An array of strings representing the values of the entity.
+   */
+  entities: (lines: string[], name: string) => string[]
+
+  /** Creates a new doctext from the given lines and the same metadata as the original doctext. */
+  nested: (lines: string[]) => RawDoctext
+
 }

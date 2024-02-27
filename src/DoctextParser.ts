@@ -1,49 +1,43 @@
 
+import { escapeRegExp } from 'lodash'
+
 import { RawDoctext } from './RawReader'
-import config from './config'
 import { InvalidEntity, UnknownEntity } from './errors'
-import { Doctext, Entities, EntityParseUtil, EntitySpec } from './types'
+import { Doctext, Entities, EntitySpec, ParseUtil } from './types'
 
 export default class DoctextParser<E extends Entities> {
 
   public constructor(
-    private readonly entities: Record<string, EntitySpec> = config.entities
+    private readonly entities: Record<string, EntitySpec<E>>
   ) {}
 
   public parse(raw: RawDoctext): Doctext<E> {
     const {lineno, lines, nodes} = raw
-    const [entities, rest] = this.extractEntities(raw, lines)
-    const {summary, description} = this.parseDoctextLines(rest)
+    const util = createUtil(raw)
+    const [entities, rest] = this.extractEntities(raw, lines, util)
+
+    const summary = util.summary(rest)
+    const body = util.body(rest)
 
     return {
       lineno,
       summary,
-      description,
+      body,
       entities,
       nodes,
     }
   }
 
-  private extractEntities(doctext: RawDoctext, lines: string[]): [E, string[]] {
+  private extractEntities(doctext: RawDoctext, lines: string[], util: ParseUtil): [E, string[]] {
     const entities = {} as E
     const rest: string[] = []
 
-    const util: EntityParseUtil = {
-      merge: lines => lines.join(' ').replace(/\s{2,}/, ' ').trim(),
-      raw:   lines => ({
-        lines:    lines,
-        lineno:   doctext.lineno,
-        separate: false,
-        nodes:    doctext.nodes,
-      }),
-    }
-
-    const addEntity = (meta: EntitySpec, args: string[], lines: string[]) => {
+    const addEntity = (meta: EntitySpec<E>, args: string[], lines: string[]) => {
       meta.add(entities, args, lines, util)
     }
 
     let current: {
-      meta:  EntitySpec,
+      meta:  EntitySpec<E>,
       args:  string[],
       lines: string[]
     } | undefined
@@ -53,7 +47,7 @@ export default class DoctextParser<E extends Entities> {
         if (current == null) {
           throw new InvalidEntity(`Unxpected entity content line at ${index + 1}`, doctext)
         }
-        current.lines.push(line.trim())
+        current.lines.push(line.replace(/^\s{2}/, '').trimEnd())
         continue entity
       }
 
@@ -116,19 +110,45 @@ export default class DoctextParser<E extends Entities> {
     return [entities, rest]
   }
 
-  private parseDoctextLines(lines: string[]) {
-    // The description is the full text, but with newlines replaced with spaces.
-    const description = lines.join(' ').replace(/\s+/g, ' ').trim()
+}
 
-    // The summary is only the first few lines until there is an explicit blank line.
-    const blankLineIndex = lines.findIndex(it => it === '')
-    const summary = blankLineIndex < 0
-      ? description
-      : lines.slice(0, blankLineIndex).join(' ').replace(/\s+/, ' ').trim()
+function createUtil(doctext: RawDoctext): ParseUtil {
+  return {
+    summary: lines => {
+      const blankIndex = lines.findIndex(it => it.trim() === '')
+      return (blankIndex < 0 ? lines : lines.slice(0, blankIndex))
+        .join(' ')
+        .replace(/\s{2,}/, ' ')
+        .trim()
+    },
+    
+    body: (lines, skipEntities = false) => {
+      const body = lines.join(' ').replace(/\s{2,}/, ' ').trim()
+      if (skipEntities) {
+        return body.replace(/@(\w+).*(?:\n\s{2,}.*)*/g, '').trim()
+      } else {
+        return body
+      }
+    },
+    
+    entities: (lines, name) => {
+      const namePattern = escapeRegExp(name)
+      const regexp = new RegExp(`@${namePattern}\\s*(.*)((?:\\n\\s{2}.*)*)`, 'g')
+      const matches = lines.join('\n').matchAll(regexp)
+      return [...matches].map(match => {
+        const value = match[1]
+        const nested = match[2].replace(/\n/g, ' ')
+        return (value + nested).replace(/\s{2,}/, ' ').trim()
+      })
+    },
 
-    return {summary, description}
+    nested: lines => ({
+      lines:    lines,
+      lineno:   doctext.lineno,
+      separate: false,
+      nodes:    doctext.nodes,
+    }),
   }
-
 }
 
 const ENTITY_RE = /^\s*@(\w+)(?:\s+(.*?))?$/

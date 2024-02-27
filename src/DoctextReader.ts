@@ -1,29 +1,51 @@
 import * as FS from 'fs-extra'
-import { cloneDeep, isPlainObject, mapValues, pick } from 'lodash'
+import { cloneDeep, isFunction, mapValues, pick } from 'lodash'
 import { objectEntries } from 'ytil'
 
 import DoctextParser from './DoctextParser'
 import RawReader, { RawReadResult } from './RawReader'
+import defaultEntities from './defaultEntities'
 import { DoctextError, ReferencedKeyNotFound, UnableToDetermineCallsite } from './errors'
-import { Doctext, DoctextDictionary, DoctextOptions, Entities, ReadResult } from './types'
+import {
+  Doctext,
+  DoctextDictionary,
+  DoctextOptions,
+  Entities,
+  EntitySpec,
+  ReadResult,
+} from './types'
 
 export default class DoctextReader<E extends Entities = Entities> {
 
   private constructor(
     private readonly callee: Function | undefined,
+    extraEntities: Record<string, EntitySpec<E>> = {},
     private readonly options: DoctextOptions = {}
   ) {
-    this.parser = new DoctextParser(this.options.entities)
+    this.parser = new DoctextParser<E>({
+      ...defaultEntities,
+      ...extraEntities,
+    })
   }
 
   private readonly parser: DoctextParser<E>
 
-  public static create<E extends Entities>(callee: Function, options?: DoctextOptions): DoctextReader<E>
-  public static create<E extends Entities>(options?: DoctextOptions): DoctextReader<E>
+  public static createWithEntities<E>(callee: Function, entities: Record<string, EntitySpec<Entities & E>>, options?: DoctextOptions): DoctextReader<Entities & E>
+  public static createWithEntities<E>(entities: Record<string, EntitySpec<Entities & E>>, options?: DoctextOptions): DoctextReader<Entities & E>
+  public static createWithEntities(...args: any[]) {
+    const callee = isFunction(args[0]) ? args.shift() : undefined
+    const entities = args.shift()
+    const options = args.shift() ?? {}
+
+    return new DoctextReader(callee, entities, options)
+  }
+
+  public static create(callee: Function, options?: DoctextOptions): DoctextReader<Entities>
+  public static create(options?: DoctextOptions): DoctextReader<Entities>
   public static create(...args: any[]) {
-    const options = isPlainObject(args[args.length - 1]) ? args.pop() : {}
-    const callee = args[0] ?? undefined
-    return new DoctextReader(callee, options)
+    const callee = isFunction(args[0]) ? args.shift() : undefined
+    const options = args.shift() ?? {}
+    return new DoctextReader(callee, {}, options)
   }
 
   // #region Interface
@@ -98,7 +120,7 @@ export default class DoctextReader<E extends Entities = Entities> {
         throw new ReferencedKeyNotFound(doctext.entities.copy, doctext)
       }
 
-      Object.assign(doctext, pick(original, 'summary', 'description'))
+      Object.assign(doctext, pick(original, 'summary', 'body'))
       doctext.entities = cloneDeep(original.entities)
     }
   }

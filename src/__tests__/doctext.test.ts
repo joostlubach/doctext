@@ -33,32 +33,32 @@ describe("doctext", () => {
 
       expect(result.matched).toEqual({
         foo: {
-          summary:     "Foo.",
-          description: "Foo.",
-          lineno:      expect.any(Number), // Let's not assume we will not insert lines in this very file.
-          entities:    {},
-          nodes:       expect.any(Array),
+          summary:  "Foo.",
+          body:     "Foo.",
+          lineno:   expect.any(Number), // Let's not assume we will not insert lines in this very file.
+          entities: {},
+          nodes:    expect.any(Array),
         },
         bar: {
-          summary:     "Bar.",
-          description: "Bar.",
-          lineno:      expect.any(Number),
-          entities:    {},
-          nodes:       expect.any(Array),
+          summary:  "Bar.",
+          body:     "Bar.",
+          lineno:   expect.any(Number),
+          entities: {},
+          nodes:    expect.any(Array),
         },
         baz: {
-          summary:     "Baz. Baz.",
-          description: "Baz. Baz.",
-          lineno:      expect.any(Number),
-          entities:    {},
-          nodes:       expect.any(Array),
+          summary:  "Baz. Baz.",
+          body:     "Baz. Baz.",
+          lineno:   expect.any(Number),
+          entities: {},
+          nodes:    expect.any(Array),
         },
         qux: {
-          summary:     "Qux. Qux.",
-          description: "Qux. Qux.",
-          lineno:      expect.any(Number),
-          entities:    {},
-          nodes:       expect.any(Array),
+          summary:  "Qux. Qux.",
+          body:     "Qux. Qux.",
+          lineno:   expect.any(Number),
+          entities: {},
+          nodes:    expect.any(Array),
         },
       })
     })
@@ -72,21 +72,21 @@ describe("doctext", () => {
       })
 
       expect(result.matched.foo).toEqual(expect.objectContaining({
-        summary:     "Foo.",
-        description: "Foo. Foo bar baz qux.",
+        summary: "Foo.",
+        body:    "Foo. Foo bar baz qux.",
       }))
     })
 
-    it("should allow for an empty description", async () => {
+    it("should allow for an empty body", async () => {
       const result = DoctextReader.create().readSync({
         ///
         foo: 'foo',
       })
 
       expect(result.matched.foo).toEqual(expect.objectContaining({
-        summary:     '',
-        description: '',
-        entities:    {},
+        summary:  '',
+        body:     '',
+        entities: {},
       }))
     })
     
@@ -104,7 +104,7 @@ describe("doctext", () => {
         baz: 'baz',
       })
 
-      expect(mapValues(result.matched, it => it.description)).toEqual({
+      expect(mapValues(result.matched, it => it.body)).toEqual({
         bar: "Will work.",
         baz: "Will work too.",
       })
@@ -137,7 +137,7 @@ describe("doctext", () => {
 
       })
 
-      expect(result.unmatched.map(it => it.description)).toEqual([
+      expect(result.unmatched.map(it => it.body)).toEqual([
         "Hello!",
         "What's this now?",
       ])
@@ -146,7 +146,7 @@ describe("doctext", () => {
     it("should allow using '---' to mark that the doctext is a separate doctext in case of confusion", () => {
       const result = DoctextReader.create().readSync({
         /**
-         * I am an overall description of this object, _not_ a description of the `foo` property.
+         * I am an overall body of this object, _not_ a body of the `foo` property.
          * ---
          */
         foo: 'foo',
@@ -155,18 +155,18 @@ describe("doctext", () => {
         bar: 'bar',
       })
 
-      expect(mapValues(result.matched, it => it.description)).toEqual({
+      expect(mapValues(result.matched, it => it.body)).toEqual({
         bar: "I do belong to bar.",
       })
 
-      expect(result.unmatched.map(it => it.description)).toEqual([
-        "I am an overall description of this object, _not_ a description of the `foo` property.",
+      expect(result.unmatched.map(it => it.body)).toEqual([
+        "I am an overall body of this object, _not_ a body of the `foo` property.",
       ])
     })
 
   })
 
-  describe("entities", () => {
+  describe("default entities", () => {
 
     describe("@link", () => {
 
@@ -213,15 +213,15 @@ describe("doctext", () => {
           foo: 'foo',
         })
 
-        expect(result.matched.bar).toEqual(expect.objectContaining({
-          summary:     "Foo.",
-          description: "Foo.",
-          entities:    {links: [{href: "https://example.com", caption: "https://example.com"}]},
-        }))
         expect(result.matched.foo).toEqual(expect.objectContaining({
-          summary:     "Foo.",
-          description: "Foo.",
-          entities:    {links: [{href: "https://example.com", caption: "https://example.com"}]},
+          summary:  "Foo.",
+          body:     "Foo.",
+          entities: {links: [{href: "https://example.com", caption: "https://example.com"}]},
+        }))
+        expect(result.matched.bar).toEqual(expect.objectContaining({
+          summary:  "Foo.",
+          body:     "Foo.",
+          entities: {links: [{href: "https://example.com", caption: "https://example.com"}]},
         }))
       })
 
@@ -257,13 +257,13 @@ describe("doctext", () => {
             summary: "Foo.",
           }),
           'foo.bar': expect.objectContaining({
-            summary:     "Foobar.",
-            description: "Foobar. Foobar also exists.",
+            summary: "Foobar.",
+            body:    "Foobar. Foobar also exists.",
           }),
         })
       })
 
-      it("should allow specifying summary and description for any property if it's a separate doctext", () => {
+      it("should allow specifying summary and body for any property if it's a separate doctext", () => {
         const result = DoctextReader.create().readSync({
           /**
            * @property foo.bar.baz
@@ -277,15 +277,15 @@ describe("doctext", () => {
 
         expect(result.matched).toEqual({
           'foo.bar.baz': expect.objectContaining({
-            summary:     "Foobarbaz.",
-            description: "Foobarbaz. Foobarbaz also exists.",
+            summary: "Foobarbaz.",
+            body:    "Foobarbaz. Foobarbaz also exists.",
           }),
         })
       })
 
     })
 
-    it("should parse entities and leave all other lines for the summary and description", async () => {
+    it("should parse entities and leave all other lines for the summary and body", async () => {
       const doctext = DoctextReader.create().readSync({
         /// Summary
         /// @property name
@@ -296,9 +296,9 @@ describe("doctext", () => {
       }).matched.foo
 
       expect(doctext).toEqual(expect.objectContaining({
-        summary:     'Summary',
-        description: 'Summary Description',
-        entities:    {
+        summary:  'Summary',
+        body:     'Summary Description',
+        entities: {
           properties: {name: expect.any(Object)},
           links:      [{href: 'https://example.com', caption: "Caption"}],
         },
@@ -328,9 +328,9 @@ describe("doctext", () => {
       }).matched.foo
 
       expect(doctext).toEqual(expect.objectContaining({
-        summary:     'Summary',
-        description: 'Summary',
-        entities:    {
+        summary:  'Summary',
+        body:     'Summary',
+        entities: {
           links: [{href: 'https://example.com', caption: "Description"}],
         },
       }))
@@ -378,6 +378,68 @@ describe("doctext", () => {
           foo: 'foo',
         })
       }).toThrowError(InvalidEntity)
+    })
+
+  })
+
+  describe("custom entities", () => {
+
+    it("should allow adding a custom entity", () => {
+      const reader = DoctextReader.createWithEntities<{
+        custom:       string
+        customBody:   string
+        twoArgs:      string[]
+        nestedBody:   string
+        nestedValues: string[]
+      }>({
+        custom: {
+          args:    1,
+          content: true,
+          add:     (entities, args, lines, util) => {
+            entities.custom = args[0]
+            entities.customBody = util.body(lines)
+          },
+        },
+        twoArgs: {
+          args:    2,
+          content: false,
+          add:     (entities, args) => {
+            entities.twoArgs = args
+          },
+        },
+        nestedValues: {
+          args:    0,
+          content: true,
+
+          add: (entities, args, lines, util) => {
+            entities.nestedBody = util.body(lines, true)
+            entities.nestedValues = util.entities(lines, 'value')          
+          },
+        },
+      })
+
+      const result = reader.readSync({
+        /**
+         * Foo
+         * @custom my-custom-arg Custom content.
+         * @twoArgs arg1 arg2
+         * @nestedValues
+         *   This has nested values.
+         *   @value This is value 1
+         *   @value This is value 2
+         *   @value
+         *     This is value 3.
+         */
+        foo: 'foo',
+      })
+
+      expect(result.matched.foo.entities).toEqual({
+        custom:       "my-custom-arg",
+        customBody:   "Custom content.",
+        twoArgs:      ["arg1", "arg2"],
+        nestedBody:   "This has nested values.",
+        nestedValues: ["This is value 1", "This is value 2", "This is value 3."],
+      })
     })
 
   })

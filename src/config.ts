@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-import defaultEntities from './defaultEntities'
 import { DoctextOptions } from './types'
 
 export interface Config extends Required<DoctextOptions> {
@@ -17,7 +15,6 @@ const config: Config = {
   marker:    'jsdoc',
   whitelist: [],
   blacklist: [],
-  entities:  defaultEntities,
 
   logger: {
     debug: (...args) => process.env.DEBUG ? console.debug(...args) : undefined,
