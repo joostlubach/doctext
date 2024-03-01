@@ -21,6 +21,7 @@ export interface DoctextOptions {
 }
 
 export interface ReadResult<E extends Entities = Entities> {
+  callsite:         Callsite
   matched:          DoctextDictionary<E>
   unmatched:        Doctext<E>[]
   undocumentedKeys: string[]
@@ -31,9 +32,9 @@ export type DoctextDictionary<E extends Entities> = {
 }
 
 export interface Callsite {
-  file:          string
-  lineno:        number
-  functionName?: string
+  path:         string
+  lineno:       number
+  functionName: string
 }
 
 export interface Doctext<E extends Entities = Entities> {

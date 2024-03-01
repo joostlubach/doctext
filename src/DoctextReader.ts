@@ -7,6 +7,7 @@ import RawReader, { RawReadResult } from './RawReader'
 import defaultEntities from './defaultEntities'
 import { DoctextError, ReferencedKeyNotFound, UnableToDetermineCallsite } from './errors'
 import {
+  Callsite,
   Doctext,
   DoctextDictionary,
   DoctextOptions,
@@ -51,26 +52,32 @@ export default class DoctextReader<E extends Entities = Entities> {
   // #region Interface
 
   public readSync<O extends Record<string, any>>(_: O): ReadResult<E> {
-    const callsite = this.callsite(this.readSync)
+    const callsite = this.deriveCallsite(this.readSync)
     try {
-      const content = FS.readFileSync(callsite.file, 'utf8')  
+      const content = FS.readFileSync(callsite.path, 'utf8')  
       const reader = new RawReader(content, callsite, this.options)
       const raw = reader.read()
-      return this.parseAndResolve(raw)
+      return {
+        callsite, 
+        ...this.parseAndResolve(raw),
+      }
     } catch (error) {
-      throw DoctextError.wrap(error, callsite.file, callsite.lineno)
+      throw DoctextError.wrap(error, callsite.path, callsite.lineno)
     }
   }
 
   public async readAsync<O extends Record<string, any>>(_: O): Promise<ReadResult<E>> {
-    const callsite = this.callsite(this.readAsync)
+    const callsite = this.deriveCallsite(this.readAsync)
     try {
-      const content = await FS.readFile(callsite.file, 'utf8')  
+      const content = await FS.readFile(callsite.path, 'utf8')  
       const reader = new RawReader(content, callsite, this.options)
       const raw = reader.read()
-      return this.parseAndResolve(raw)
+      return {
+        callsite,
+        ...this.parseAndResolve(raw),
+      }
     } catch (error) {
-      throw DoctextError.wrap(error, callsite.file, callsite.lineno)
+      throw DoctextError.wrap(error, callsite.path, callsite.lineno)
     }
   }
 
@@ -78,7 +85,7 @@ export default class DoctextReader<E extends Entities = Entities> {
 
   // #region Callsite
   
-  private callsite(defaultCallee: Function) {
+  private deriveCallsite(defaultCallee: Function): Callsite {
     const callee = this.callee ?? defaultCallee
     
     const tmp = {} as {stack: string}
@@ -91,7 +98,7 @@ export default class DoctextReader<E extends Entities = Entities> {
     }
 
     return {
-      file:         match[1],
+      path:     match[1],
       lineno:       parseInt(match[2], 10),
       functionName: callee?.name,
     }  
