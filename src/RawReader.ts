@@ -90,20 +90,13 @@ export default class RawReader {
 
       if (node.type !== 'CallExpression') { return false }
 
-      if (this.callsite.functionName != null) {
-        const callee = (node as Acorn.CallExpression).callee
-        if (callee.type === 'Identifier') {
-          if (callee.name !== this.callsite.functionName) { return false }
-        } else if (callee.type === 'MemberExpression') {
-          if (callee.property.type !== 'Identifier') { return false }
-          if (callee.property.name !== this.callsite.functionName) { return false }
-        } else {
-          return false
-        }
-      }
+      const call = node as Acorn.CallExpression
+      if (call.callee.type === 'Super') { return false }
+      if (!this.validateCalleeName(call.callee)) { return false }
 
       return true
     })
+
     if (callNode == null) {
       throw new ObjectLiteralNotFound("Could not find CallExpression node", this.callsite)
     }
@@ -116,6 +109,33 @@ export default class RawReader {
     }
 
     return callNode.arguments[0] as Acorn.ObjectExpression
+  }
+
+  private validateCalleeName(callee: Acorn.Expression): boolean {
+    const {functionName} = this.callsite
+    if (functionName == null) { return true }
+
+    // This is a bit of a heuristic approach. Extend if necessary.
+    switch (callee.type) {
+    case 'Identifier':
+      // A simple identifier, it's name should match the function name.
+      return callee.name ===functionName
+
+    case 'MemberExpression':
+      // It's a method invocation. Forget about the receiver, focus on the property.
+      if (callee.property.type === 'PrivateIdentifier') { return false }
+      return this.validateCalleeName(callee.property)
+
+    case 'SequenceExpression':
+      // When transpiling TS, often a function is call is transformed into (0, fn)(...args). Don't know why that is,
+      // but let's resolve all sequence expression nodes by looking at the last one, which is the value of the
+      // expression as a whole.
+      return this.validateCalleeName(callee.expressions[callee.expressions.length - 1])
+
+    default:
+      // No support for other nodes (yet).
+      return false
+    }
   }
 
   // #endregion
