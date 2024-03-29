@@ -1,4 +1,4 @@
-import { Entities, EntitySpec } from './types'
+import { Entities, EntitySpec } from './types.js'
 
 const defaultEntities: Record<string, EntitySpec<Entities>> = {
   copy: {

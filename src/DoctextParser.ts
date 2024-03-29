@@ -1,9 +1,9 @@
 
 import { escapeRegExp } from 'lodash'
 
-import { RawDoctext } from './RawReader'
-import { InvalidEntity, UnknownEntity } from './errors'
-import { Doctext, Entities, EntitySpec, ParseUtil } from './types'
+import { RawDoctext } from './RawReader.js'
+import { InvalidEntity, UnknownEntity } from './errors.js'
+import { Doctext, Entities, EntitySpec, ParseUtil } from './types.js'
 
 export default class DoctextParser<E extends Entities> {
 
