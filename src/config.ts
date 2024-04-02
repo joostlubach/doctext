@@ -1,4 +1,4 @@
-import { DoctextOptions } from './types.js'
+import { DoctextOptions } from './types'
 
 export interface Config extends Required<DoctextOptions> {
   logger: Logger

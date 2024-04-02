@@ -1,4 +1,4 @@
-export { default as DoctextParser } from './DoctextParser.js'
-export { default as DoctextReader } from './DoctextReader.js'
-export { default as defaultEntities } from './defaultEntities.js'
-export * from './types.js'
+export { default as DoctextParser } from './DoctextParser'
+export { default as DoctextReader } from './DoctextReader'
+export { default as defaultEntities } from './defaultEntities'
+export * from './types'
