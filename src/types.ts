@@ -1,6 +1,6 @@
 import * as Acorn from 'acorn'
 
-import { RawDoctext } from './RawReader'
+import { RawDoctext } from './RawReader.js'
 
 export interface DoctextOptions {
   /**

@@ -2,10 +2,10 @@ import * as Acorn from 'acorn'
 import { tsPlugin } from 'acorn-typescript'
 import { escapeRegExp } from 'lodash'
 
-import config from './config'
-import { ObjectLiteralNotFound } from './errors'
-import { Callsite, DoctextOptions } from './types'
-import { findNode, walk } from './walkers'
+import config from './config.js'
+import { ObjectLiteralNotFound } from './errors.js'
+import { Callsite, DoctextOptions } from './types.js'
+import { findNode, walk } from './walkers.js'
 
 const TsParser = Acorn.Parser.extend(tsPlugin() as any)
 

@@ -2,10 +2,10 @@ import * as FS from 'fs-extra'
 import { cloneDeep, isFunction, mapValues, pick } from 'lodash'
 import { objectEntries } from 'ytil'
 
-import DoctextParser from './DoctextParser'
-import RawReader, { RawReadResult } from './RawReader'
-import defaultEntities from './defaultEntities'
-import { DoctextError, ReferencedKeyNotFound, UnableToDetermineCallsite } from './errors'
+import DoctextParser from './DoctextParser.js'
+import RawReader, { RawReadResult } from './RawReader.js'
+import defaultEntities from './defaultEntities.js'
+import { DoctextError, ReferencedKeyNotFound, UnableToDetermineCallsite } from './errors.js'
 import {
   Callsite,
   Doctext,
@@ -14,7 +14,7 @@ import {
   Entities,
   EntitySpec,
   ReadResult,
-} from './types'
+} from './types.js'
 
 export default class DoctextReader<E extends Entities = Entities> {
 

@@ -1,5 +1,5 @@
-import { RawDoctext } from './RawReader'
-import { Callsite, Doctext } from './types'
+import { RawDoctext } from './RawReader.js'
+import { Callsite, Doctext } from './types.js'
 
 export class DoctextError extends Error {
 

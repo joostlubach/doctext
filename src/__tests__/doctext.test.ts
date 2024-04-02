@@ -1,12 +1,12 @@
 import { mapValues } from 'lodash'
 
-import DoctextReader from '../DoctextReader'
+import DoctextReader from '../DoctextReader.js'
 import {
   InvalidEntity,
   ObjectLiteralNotFound,
   ReferencedKeyNotFound,
   UnknownEntity,
-} from '../errors'
+} from '../errors.js'
 
 describe("doctext", () => {
 
