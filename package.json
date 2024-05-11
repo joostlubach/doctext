@@ -28,9 +28,12 @@
     "acorn": "^8.11.3",
     "acorn-typescript": "^1.4.13",
     "fs-extra": "^11.2.0",
+    "lodash": "^4.17.21",
     "ytil": "workspace:^"
   },
   "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/lodash": "^4.17.0",
     "copyfiles": "^2.4.1",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.2",
