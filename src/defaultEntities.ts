@@ -7,7 +7,7 @@ const defaultEntities: Record<string, EntitySpec<Entities>> = {
     
     add: (entities, args) => {
       entities.copy = args[0]
-    }
+    },
   },
   property: {
     args:    1,
@@ -16,7 +16,7 @@ const defaultEntities: Record<string, EntitySpec<Entities>> = {
     add: (entities, args, lines, util) => {
       entities.properties ??= {}
       entities.properties[args[0]] = util.nested(lines)
-    }
+    },
   },
   link: {
     args:    1,
@@ -28,7 +28,7 @@ const defaultEntities: Record<string, EntitySpec<Entities>> = {
 
       entities.links ??= []
       entities.links.push({href, caption})
-    }
+    },
   },
 }
 

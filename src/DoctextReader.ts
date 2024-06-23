@@ -98,7 +98,7 @@ export default class DoctextReader<E extends Entities = Entities> {
     }
 
     return {
-      path:     match[1],
+      path:         match[1],
       lineno:       parseInt(match[2], 10),
       functionName: callee?.name,
     }  
