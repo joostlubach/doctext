@@ -21,7 +21,7 @@ export default class DoctextReader<E extends Entities = Entities> {
   private constructor(
     private readonly callee: Function | undefined,
     extraEntities: Record<string, EntitySpec<E>> = {},
-    private readonly options: DoctextOptions = {}
+    private readonly options: DoctextOptions = {},
   ) {
     this.parser = new DoctextParser<E>({
       ...defaultEntities,

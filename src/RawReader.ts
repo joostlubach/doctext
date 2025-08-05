@@ -16,7 +16,7 @@ export default class RawReader {
   constructor(
     private readonly source: string,
     private readonly callsite: Callsite,
-    options: DoctextOptions = {}
+    options: DoctextOptions = {},
   ) {
     this.config = {...config, ...options}
 
@@ -196,7 +196,7 @@ export default class RawReader {
     // Strip common indent at the start.
     const startIndentLength = Math.min(...lines
       .filter(it => it !== '')
-      .map(it => it.match(/^\s*/)?.[0].length ?? 0)
+      .map(it => it.match(/^\s*/)?.[0].length ?? 0),
     )
 
     // Collapse spaces and trim the end.

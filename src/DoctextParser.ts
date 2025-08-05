@@ -8,7 +8,7 @@ import { Doctext, Entities, EntitySpec, ParseUtil } from './types'
 export default class DoctextParser<E extends Entities> {
 
   public constructor(
-    private readonly entities: Record<string, EntitySpec<E>>
+    private readonly entities: Record<string, EntitySpec<E>>,
   ) {}
 
   public parse(raw: RawDoctext): Doctext<E> {

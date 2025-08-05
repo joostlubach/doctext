@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { DoctextOptions } from './types'
 
 export interface Config extends Required<DoctextOptions> {

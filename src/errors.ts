@@ -5,7 +5,7 @@ export class DoctextError extends Error {
 
   constructor(
     message: string,
-    public readonly options: DoctextErrorOptions = {}
+    public readonly options: DoctextErrorOptions = {},
   ) {
     super(message, options)
   }
@@ -25,7 +25,7 @@ export class DoctextError extends Error {
 export class UnableToDetermineCallsite extends DoctextError {
 
   constructor(
-    public readonly stackFrame: string
+    public readonly stackFrame: string,
   ) {
     super(`Could not determine the callsite of doctext()`)
   }
@@ -36,7 +36,7 @@ export class ObjectLiteralNotFound extends DoctextError {
 
   constructor(
     message: string,
-    public readonly callsite: Callsite
+    public readonly callsite: Callsite,
   ) {
     super(message)
   }
@@ -47,7 +47,7 @@ export class UnknownEntity extends DoctextError {
 
   constructor(
     public readonly entity: string,
-    public readonly doctext: RawDoctext
+    public readonly doctext: RawDoctext,
   ) {
     super(`Unknown entity: ${entity}`)
   }
@@ -58,7 +58,7 @@ export class InvalidEntity extends DoctextError {
 
   constructor(
     public readonly message: string,
-    public readonly doctext: RawDoctext
+    public readonly doctext: RawDoctext,
   ) {
     super(message)
   }
@@ -69,7 +69,7 @@ export class ReferencedKeyNotFound extends DoctextError {
   
   constructor(
     public readonly key: string,
-    public readonly doctext: Doctext<any>
+    public readonly doctext: Doctext<any>,
   ) {
     super(`Referenced key not found: ${key}`)
   }
