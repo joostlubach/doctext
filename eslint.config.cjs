@@ -18,7 +18,7 @@ module.exports = {
 
   plugins: {
     '@stylistic': require('@stylistic/eslint-plugin'),
-    '@lowerdeck': require('@lowerdeck/eslint-plugin')
+    '@mosdev': require('@mosdev/eslint-plugin')
   },
 
   files: [
