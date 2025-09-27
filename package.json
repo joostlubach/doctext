@@ -4,42 +4,21 @@
   "description": "Dynamic doctext insertion for NodeJS.",
   "private": true,
   "author": "",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "default": "./dist/cjs/index.js"
-    }
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "pnpm clean && pnpm build:tsc",
-    "build:tsc": "pnpm build:tsc:esm && pnpm build:tsc:cjs",
-    "build:tsc:esm": "tsc -p tsconfig.prod.json --module esnext --outDir dist/esm --declarationDir dist/types",
-    "build:tsc:cjs": "tsc -p tsconfig.prod.json --module commonjs --outDir dist/cjs --declaration false --declarationMap false",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "lint": "eslint src --ext ts,tsx",
     "check": "tsc -p . --noEmit",
-    "test": "NODE_ENV=test jest"
-  },
-  "dependencies": {
-    "acorn": "^8.15.0",
-    "acorn-typescript": "^1.4.13",
-    "fs-extra": "^11.3.1",
-    "lodash": "^4.17.21",
-    "ytil": "workspace:^"
+    "lint": "eslint src --ext ts,tsx",
+    "test": "NODE_ENV=test DATA_ENV=test jest"
   },
   "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
-    "@types/lodash": "^4.17.20",
-    "copyfiles": "^2.4.1",
-    "js-yaml": "^4.1.0",
-    "rimraf": "^6.0.1",
-    "ts-jest": "^29.4.1",
-    "tsc-alias": "^1.8.16",
+    "@types/lodash": "^4.17.0",
+    "ts-jest": "^29.1.2",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@9.9.0"
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
