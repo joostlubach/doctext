@@ -4,21 +4,33 @@
   "description": "Dynamic doctext insertion for NodeJS.",
   "private": true,
   "author": "",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "module": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    }
   },
   "scripts": {
+    "build": "bun clean && bun build:tsc",
+    "build:tsc": "bun build:tsc:esm && bun build:tsc:cjs",
+    "build:tsc:esm": "tsc -p tsconfig.prod.json --module esnext --outDir dist/esm --declarationDir dist/types",
+    "build:tsc:cjs": "tsc -p tsconfig.prod.json --module commonjs --outDir dist/cjs --declaration false --declarationMap false",
+    "clean": "rimraf dist",
     "check": "tsc -p . --noEmit",
     "lint": "eslint src --ext ts,tsx",
     "test": "NODE_ENV=test DATA_ENV=test jest"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.0",
+    "rimraf": "^6.0.1",
     "ts-jest": "^29.1.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "ytil": "workspace:*"
   }
 }
