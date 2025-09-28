@@ -7,9 +7,6 @@
     "rootDir": "src",
     "outDir": "dist",
 
-    "lib": ["ESNext"],
-    "types": ["bun-types"],
-
     "declaration": true,
     "sourceMap": true,
     "declarationMap": true,
@@ -21,6 +18,8 @@
     "useDefineForClassFields": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+
+    "lib": ["ESNext"],
   },
   "include": [
     "src"

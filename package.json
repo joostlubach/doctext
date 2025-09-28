@@ -14,8 +14,8 @@
     }
   },
   "scripts": {
-    "build": "bun clean && bun build:tsc",
-    "build:tsc": "bun build:tsc:esm && bun build:tsc:cjs",
+    "build": "pnpm clean && pnpm build:tsc",
+    "build:tsc": "pnpm build:tsc:esm && pnpm build:tsc:cjs",
     "build:tsc:esm": "tsc -p tsconfig.prod.json --module esnext --outDir dist/esm --declarationDir dist/types",
     "build:tsc:cjs": "tsc -p tsconfig.prod.json --module commonjs --outDir dist/cjs --declaration false --declarationMap false",
     "clean": "rimraf dist",
@@ -24,12 +24,14 @@
     "test": "NODE_ENV=test DATA_ENV=test jest"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.0",
     "rimraf": "^6.0.1",
     "ts-jest": "^29.1.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "jest": "^30.2.0",
     "lodash": "^4.17.21",
     "ytil": "workspace:*"
   }
