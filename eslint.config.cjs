@@ -1,5 +1,5 @@
 const FS = require('fs')
-const YAML = require('js-yaml')
+const yaml = require('yaml')
 
 module.exports = {
   languageOptions: {
@@ -33,5 +33,5 @@ module.exports = {
     'tsconfig.json'
   ],
 
-  rules: YAML.load(FS.readFileSync('../../eslint.rules.yml'))
+  rules: yaml.parse(FS.readFileSync('../../eslint.rules.yml', 'utf-8'))
 };
